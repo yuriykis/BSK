@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 import javax.crypto.Cipher;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.swing.*;
@@ -45,6 +46,8 @@ public class FileManipulator{
     public void sendFile(Button button, Socket s){
         BufferedInputStream in = null;
         byte[] buffer = null;
+        byte[] encrypted_buffer = null;
+        Encryptor encryptor = new Encryptor();
         try{
             in = new BufferedInputStream(new FileInputStream(path.toFile()));
         }catch(FileNotFoundException fn){
@@ -53,10 +56,11 @@ public class FileManipulator{
 
         try{
             buffer = new byte[in.available()];
-            int bytesRead = in.read(buffer, 0, buffer.length);
+            in.read(buffer, 0, buffer.length);
             try{
                 OutputStream out = s.getOutputStream();
-                out.write(buffer, 0, bytesRead);
+                encrypted_buffer = encryptor.encryptFile(buffer);
+                out.write(encrypted_buffer);
                 out.flush();
                 JOptionPane.showMessageDialog(button, "Success! File was sent.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 in.close();

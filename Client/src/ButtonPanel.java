@@ -19,8 +19,8 @@ public class ButtonPanel extends JPanel{
       setAlignmentX(Component.LEFT_ALIGNMENT);
       setPreferredSize(new Dimension(150,600));
       setMaximumSize(new Dimension(150,600));
-       add(fileButton);
-       add(textButton);
+      add(fileButton);
+      add(textButton);
       setBorder(BorderFactory.createTitledBorder("Wybór opcji wysyłania"));
     }
     

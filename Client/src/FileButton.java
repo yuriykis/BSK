@@ -13,7 +13,8 @@ public class FileButton extends Button {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e){    
+    public void actionPerformed(ActionEvent e){   
+        
         FileManipulator fm = new FileManipulator();
         fm.sendFile(this, s);
         }
