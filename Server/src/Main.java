@@ -18,7 +18,8 @@ public class Main {
 
     public final static int FILE_SIZE = 81920;
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, NoSuchAlgorithmException,
+            NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         ServerSocket ss = new ServerSocket(4999); // socket for files
         ServerSocket sst = new ServerSocket(5000); // socket for string
 
@@ -33,17 +34,28 @@ public class Main {
         EncryptionModeReceiver encryptionModeReceiver = new EncryptionModeReceiver(emode);
         encryptionModeReceiver.start();
 
-        // waiting for key
-        byte[] byteKey = new byte[16];
-        KeyReceiver kr = new KeyReceiver(byteKey);
+        // waiting for session key
+        byte[] encryptedByteKey = new byte[16];
+        SessionKeyReceiver kr = new SessionKeyReceiver(encryptedByteKey);
         kr.start();
 
-        // waiting for file
+
+
+        // waiting for client connection
         Socket s = ss.accept();
+
+        //send public key to client
+        SecureKeyManipulator secureKeyManipulator = new SecureKeyManipulator();
+        secureKeyManipulator.sendSessionKey();
+
 
         kr.join();
         encryptionModeReceiver.join();
 
+        //decrypt session key
+        Cipher decryptSessionKeyCipher = Cipher.getInstance("RSA");
+        decryptSessionKeyCipher.init(Cipher.DECRYPT_MODE, secureKeyManipulator.getPrivateKey());
+        byte[] byteKey = decryptSessionKeyCipher.doFinal(encryptedByteKey);
 
         String emodeString = new String(emode);
 

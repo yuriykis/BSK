@@ -13,7 +13,7 @@ public class ButtonPanel extends JPanel{
     public ButtonPanel(Connection c){
 
       setLayout(new FlowLayout());
-      fileButton = new FileButton(this, c.getSocket1());
+      fileButton = new FileButton(this, c);
       textButton = new TextButton(this, c.getSocket2());
 
       setAlignmentX(Component.LEFT_ALIGNMENT);

@@ -2,13 +2,13 @@ import java.io.*;
 import java.io.IOException;
 import java.net.*;
 
-public class KeyReceiver extends Thread {
+public class SessionKeyReceiver extends Thread {
 
     private ServerSocket ss;
     private Socket s;
     private byte[] byteKey;
 
-    KeyReceiver(byte[] key){
+    SessionKeyReceiver(byte[] key){
         ss = null;
         s = null;
         byteKey = key;

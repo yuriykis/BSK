@@ -27,8 +27,10 @@ import javax.crypto.spec.SecretKeySpec;
 public class FileManipulator{
     private Path path = null;
     private String encryptMode = null;
+    private Connection connection;
 
-    FileManipulator(){
+    FileManipulator(Connection c){
+        this.connection = c;
         JFileChooser fileChooser = new JFileChooser();
         File curDir = new File(System.getProperty("user.dir"));
         fileChooser.setCurrentDirectory(curDir);
@@ -50,7 +52,7 @@ public class FileManipulator{
         BufferedInputStream in = null;
         byte[] buffer = null;
         byte[] encrypted_buffer = null;
-        Encryptor encryptor = new Encryptor();
+        Encryptor encryptor = new Encryptor(connection);
         try{
             in = new BufferedInputStream(new FileInputStream(path.toFile()));
         }catch(FileNotFoundException fn){
