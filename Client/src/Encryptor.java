@@ -1,14 +1,18 @@
 package src;
+
 import java.io.*;
 import java.net.Socket;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.naming.directory.NoSuchAttributeException;
+import javax.swing.JOptionPane;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.*;
@@ -18,18 +22,28 @@ public class Encryptor {
     // private SecretKey key;
     private SecretKeySpec key;
     private Cipher cipher;
-    String stringKey = "QWERTYUI12345678";
-    IvParameterSpec ivParameterSpec;
-
+    private byte[] myKey;
+    private IvParameterSpec ivParameterSpec;
+    private String[] encrytionMode = {"ECB", "CBC", "CFB", "OFB"};
+    private int encrytionModeInteger = 0;
+ 
     Encryptor() {
+        encrytionModeInteger = JOptionPane.showOptionDialog(null, "Proszę wybrać metodę szyfrowania", "Metoda szyfrowania", JOptionPane.DEFAULT_OPTION,
+         JOptionPane.INFORMATION_MESSAGE, null, encrytionMode, encrytionMode[0]);
         try {
-            cipher = Cipher.getInstance("AES/OFB/PKCS5Padding");
+            cipher = Cipher.getInstance("AES/" + encrytionMode[encrytionModeInteger] + "/PKCS5Padding");
+            generateKey();
             sendKey();
+            sendEncryptionMode();
             byte[] iv = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
             ivParameterSpec = new IvParameterSpec(iv);
-            key = new SecretKeySpec(stringKey.getBytes(), "AES");
+            key = new SecretKeySpec(myKey, "AES");
             try {
-                cipher.init(Cipher.ENCRYPT_MODE, key, ivParameterSpec);
+                if(encrytionMode[encrytionModeInteger] == "ECB"){
+                    cipher.init(Cipher.ENCRYPT_MODE, key);
+                }else{
+                    cipher.init(Cipher.ENCRYPT_MODE, key, ivParameterSpec);
+                }
             } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
                 System.out.println("Invalid Key");
                 cipher = null;
@@ -46,10 +60,25 @@ public class Encryptor {
         }
     }
 
-    public void sendKey() throws IOException{
+    private void generateKey(){
+        Random random = ThreadLocalRandom.current();
+        myKey = new byte[16];
+        random.nextBytes(myKey);
+    }
+
+    private void sendKey() throws IOException{
         Socket s = new Socket("localhost", 5001);
         OutputStream bout = s.getOutputStream();
-        bout.write(stringKey.getBytes());
+        bout.write(myKey);
+        bout.close();
+        s.close();
+    }
+
+    private void sendEncryptionMode() throws IOException{
+        Socket s = new Socket("localhost", 5002);
+        OutputStream bout = s.getOutputStream();
+        bout.write(encrytionMode[encrytionModeInteger].getBytes());
+        bout.close();
         s.close();
     }
 

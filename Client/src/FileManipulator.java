@@ -26,6 +26,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class FileManipulator{
     private Path path = null;
+    private String encryptMode = null;
 
     FileManipulator(){
         JFileChooser fileChooser = new JFileChooser();
@@ -39,9 +40,11 @@ public class FileManipulator{
         }
     }
 
+
     public Path getPath(){
         return this.path;
     }
+
 
     public void sendFile(Button button, Socket s){
         BufferedInputStream in = null;

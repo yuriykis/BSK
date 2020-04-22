@@ -2,30 +2,30 @@ import java.io.*;
 import java.io.IOException;
 import java.net.*;
 
-public class KeyReceiver extends Thread {
+public class EncryptionModeReceiver extends Thread {
 
     private ServerSocket ss;
     private Socket s;
-    private byte[] byteKey;
+    private byte[] encryptionModeByte;
 
-    KeyReceiver(byte[] key){
+    EncryptionModeReceiver(byte[] emode){
         ss = null;
         s = null;
-        byteKey = key;
+        encryptionModeByte = emode;
     }
 
 
     @Override
     public void run(){
         try{
-            ss = new ServerSocket(5001);
+            ss = new ServerSocket(5002);
             s = ss.accept();
             InputStream bis = s.getInputStream();
-            bis.read(byteKey);
+            bis.read(encryptionModeByte);
             s.close();
             ss.close();
         }catch(IOException e){
-            System.out.println("Key Receiver socket error");
+            System.out.println("Encryption Mode Receiver socket error");
         }
     }
 }

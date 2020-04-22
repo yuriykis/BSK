@@ -28,6 +28,11 @@ public class Main {
         TextReceiver rt = new TextReceiver(sst);
         rt.start();
 
+        //waitong for encryption mode
+        byte[] emode = new byte[3];
+        EncryptionModeReceiver encryptionModeReceiver = new EncryptionModeReceiver(emode);
+        encryptionModeReceiver.start();
+
         // waiting for key
         byte[] byteKey = new byte[16];
         KeyReceiver kr = new KeyReceiver(byteKey);
@@ -35,7 +40,12 @@ public class Main {
 
         // waiting for file
         Socket s = ss.accept();
+
         kr.join();
+        encryptionModeReceiver.join();
+
+
+        String emodeString = new String(emode);
 
         InputStream in = s.getInputStream();
         byte[] buffer = new byte[FILE_SIZE];
@@ -47,7 +57,6 @@ public class Main {
 
         System.in.read();
 
-        // String stringKey = "QWERTYUI12345678";
         // decrypt file
         BufferedInputStream bis = new BufferedInputStream(new FileInputStream(path.toFile()));
 
@@ -55,12 +64,16 @@ public class Main {
         byte[] iv = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
         try {
-            Cipher decryptCipher = Cipher.getInstance("AES/OFB/PKCS5Padding");
+            Cipher decryptCipher = Cipher.getInstance("AES/" + emodeString + "/PKCS5Padding");
             byte[] decBuffer = new byte[bis.available()];
             byte[] decBytes = new byte[bis.available()];
             bis.read(decBuffer);
             try {
-                decryptCipher.init(Cipher.DECRYPT_MODE, key, ivParameterSpec);
+                if(emodeString.equals("ECB")){
+                    decryptCipher.init(Cipher.DECRYPT_MODE, key);
+                }else{
+                    decryptCipher.init(Cipher.DECRYPT_MODE, key, ivParameterSpec);
+                }
                 try {
                     decBytes = decryptCipher.doFinal(decBuffer);
 
