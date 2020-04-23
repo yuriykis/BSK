@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 
-public class SecureKeyManipulator {
+public class SecureKeyManipulator extends Thread{
     private Cipher cipher;
     private KeyPairGenerator keyPairGenerator;
     private KeyPair keyPair;
@@ -29,6 +29,11 @@ public class SecureKeyManipulator {
            
         } 
 
+    }
+
+    @Override
+    public void run(){
+        sendSessionKey();
     }
 
     public void sendSessionKey(){

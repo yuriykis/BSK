@@ -74,7 +74,7 @@ public class Encryptor {
         try {
             Cipher RSAcipher = Cipher.getInstance("RSA");
             RSAcipher.init(Cipher.ENCRYPT_MODE, publicKey);
-            byte[] encrtyptedKey = cipher.doFinal(myKey);
+            byte[] encrtyptedKey = RSAcipher.doFinal(myKey);
             Socket s = new Socket("localhost", 5001);
             OutputStream bout = s.getOutputStream();
             bout.write(encrtyptedKey);

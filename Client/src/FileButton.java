@@ -11,6 +11,7 @@ public class FileButton extends Button {
     FileButton(ButtonPanel buttonPanel, Connection c){
         super("Wyślij plik", buttonPanel);
         this.s = c.getSocket1();
+        this.connection = c;
     }
 
     @Override

@@ -35,7 +35,7 @@ public class Main {
         encryptionModeReceiver.start();
 
         // waiting for session key
-        byte[] encryptedByteKey = new byte[16];
+        byte[] encryptedByteKey = new byte[256];
         SessionKeyReceiver kr = new SessionKeyReceiver(encryptedByteKey);
         kr.start();
 
@@ -46,11 +46,12 @@ public class Main {
 
         //send public key to client
         SecureKeyManipulator secureKeyManipulator = new SecureKeyManipulator();
-        secureKeyManipulator.sendSessionKey();
+        secureKeyManipulator.start();
 
 
         kr.join();
         encryptionModeReceiver.join();
+        secureKeyManipulator.join();
 
         //decrypt session key
         Cipher decryptSessionKeyCipher = Cipher.getInstance("RSA");
